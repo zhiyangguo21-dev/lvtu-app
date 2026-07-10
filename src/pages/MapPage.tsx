@@ -40,17 +40,16 @@ const plantMarkers: PlantMarker[] = [
   { id: "zhuzi", plant: plants.find((p) => p.id === "zhuzi")!, lat: 31.2360, lng: 121.4850, count: 31 },
 ]
 
-const plantTypes = ["\u5168\u90e8\u690d\u7269", "\u4e54\u6728", "\u704c\u6728", "\u8349\u672c", "\u82b1\u5349"]
+const plantTypes = ["全部植物", "乔木", "灌木", "草本", "花卉"]
 
 function ZoomControls() {
   const map = useMap()
   return (
-    <div className="absolute top-4 right-4 z-[1000] flex flex-col bg-white rounded-xl shadow-lg overflow-hidden">
-      <button onClick={() => map.zoomIn()} className="w-10 h-10 flex items-center justify-center hover:bg-gray-50 transition-colors">
+    <div className="leaflet-control leaflet-bar !border-none !shadow-lg !rounded-xl !overflow-hidden" style={{ zIndex: 1000 }}>
+      <button onClick={() => map.zoomIn()} className="w-10 h-10 flex items-center justify-center bg-white hover:bg-gray-50 transition-colors border-b border-gray-100">
         <Plus className="w-5 h-5 text-text-primary" />
       </button>
-      <div className="h-px bg-gray-100" />
-      <button onClick={() => map.zoomOut()} className="w-10 h-10 flex items-center justify-center hover:bg-gray-50 transition-colors">
+      <button onClick={() => map.zoomOut()} className="w-10 h-10 flex items-center justify-center bg-white hover:bg-gray-50 transition-colors">
         <Minus className="w-5 h-5 text-text-primary" />
       </button>
     </div>
@@ -60,28 +59,33 @@ function ZoomControls() {
 function LocateButton() {
   const map = useMap()
   return (
-    <button onClick={() => map.locate({ setView: true, maxZoom: 16 })} className="absolute bottom-6 right-4 z-[1000] w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors">
+    <button
+      onClick={() => map.locate({ setView: true, maxZoom: 16 })}
+      className="leaflet-control leaflet-bar !border-none !shadow-lg !rounded-full !w-12 !h-12 !bg-white !flex !items-center !justify-center hover:!bg-gray-50 transition-colors"
+      style={{ zIndex: 1000, position: "absolute", bottom: "24px", right: "16px" }}
+    >
       <LocateFixed className="w-5 h-5 text-primary" />
     </button>
   )
 }
 
 function MapPage() {
-  const [filterType, setFilterType] = useState("\u5168\u90e8\u690d\u7269")
+  const [filterType, setFilterType] = useState("全部植物")
   const [showFilter, setShowFilter] = useState(false)
   const [selectedPlant, setSelectedPlant] = useState<Plant | null>(null)
 
-  const filteredMarkers = filterType === "\u5168\u90e8\u690d\u7269"
+  const filteredMarkers = filterType === "全部植物"
     ? plantMarkers
     : plantMarkers.filter((m) => m.plant.type.includes(filterType) || m.plant.tags.includes(filterType))
 
   return (
     <div className="pb-2 relative">
+      {/* Header */}
       <header className="flex items-center justify-between px-5 pt-5 pb-3">
-        <h1 className="text-2xl font-bold text-text-primary tracking-tight">\U0001f5fa\ufe0f \u57ce\u5e02\u7eff\u5730\u56fe</h1>
+        <h1 className="text-2xl font-bold text-text-primary tracking-tight">🗺️ 城市绿地图</h1>
         <div className="relative">
           <button onClick={() => setShowFilter(!showFilter)} className="flex items-center gap-1.5 bg-white border border-card-bg rounded-full px-3.5 py-1.5 text-sm font-semibold text-text-primary hover:bg-gray-50 transition-colors">
-            \U0001f333 {filterType}
+            🌳 {filterType}
             <ChevronDown className={`w-4 h-4 text-text-placeholder transition-transform ${showFilter ? "rotate-180" : ""}`} />
           </button>
           {showFilter && (
@@ -94,7 +98,7 @@ function MapPage() {
                     filterType === type ? "text-primary bg-primary-light" : "text-text-primary hover:bg-gray-50"
                   }`}
                 >
-                  {type === "\u5168\u90e8\u690d\u7269" ? "\U0001f333 " : "\U0001f33f "}{type}
+                  {type === "全部植物" ? "🌳 " : "🌿 "}{type}
                 </button>
               ))}
             </div>
@@ -102,6 +106,7 @@ function MapPage() {
         </div>
       </header>
 
+      {/* Map */}
       <div className="px-5 pb-4">
         <div className="relative rounded-2xl overflow-hidden shadow-sm border border-card-bg" style={{ height: "calc(100vh - 280px)", minHeight: "400px" }}>
           <MapContainer
@@ -110,7 +115,7 @@ function MapPage() {
             scrollWheelZoom={true}
             zoomControl={false}
             className="w-full h-full"
-            style={{ borderRadius: "1rem" }}
+            style={{ borderRadius: "1rem", zIndex: 1 }}
           >
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -122,7 +127,7 @@ function MapPage() {
                   <div className="cursor-pointer min-w-[180px]" onClick={() => setSelectedPlant(marker.plant)}>
                     <div className="flex items-center gap-2 mb-1">
                       <div className={`w-8 h-8 rounded-lg ${marker.plant.iconBg} flex items-center justify-center`}>
-                        <span className="text-sm">\U0001f33f</span>
+                        <span className="text-sm">🌿</span>
                       </div>
                       <div>
                         <p className="text-sm font-bold text-text-primary">{marker.plant.name}</p>
@@ -130,13 +135,13 @@ function MapPage() {
                       </div>
                     </div>
                     <div className="flex items-center gap-3 mt-2 text-[11px] text-text-secondary">
-                      <span>\u8bc6\u522b {marker.count} \u6b21</span>
+                      <span>识别 {marker.count} 次</span>
                       <span className="flex items-center gap-0.5">
                         <Star className="w-3 h-3 text-amber-400 fill-amber-400" />
                         {marker.plant.tags[0]}
                       </span>
                     </div>
-                    <p className="text-[10px] text-primary mt-1 font-semibold">\u70b9\u51fb\u67e5\u770b\u8be6\u60c5 \u2192</p>
+                    <p className="text-[10px] text-primary mt-1 font-semibold">点击查看详情 →</p>
                   </div>
                 </Popup>
               </Marker>
@@ -147,8 +152,9 @@ function MapPage() {
         </div>
       </div>
 
+      {/* Nearby Summary */}
       <div className="px-5">
-        <h3 className="text-sm font-bold text-text-primary mb-3">\U0001f4cd \u9644\u8fd1\u690d\u7269 ({filteredMarkers.length})</h3>
+        <h3 className="text-sm font-bold text-text-primary mb-3">📍 附近植物 ({filteredMarkers.length})</h3>
         <div className="bg-white rounded-2xl shadow-sm border border-card-bg divide-y divide-card-bg">
           {filteredMarkers.map((marker) => (
             <div
@@ -163,12 +169,13 @@ function MapPage() {
                 <p className="text-sm font-bold text-text-primary">{marker.plant.name}</p>
                 <p className="text-[11px] text-text-secondary">{marker.plant.desc}</p>
               </div>
-              <span className="text-[11px] text-text-placeholder whitespace-nowrap">\u8bc6\u522b {marker.count} \u6b21</span>
+              <span className="text-[11px] text-text-placeholder whitespace-nowrap">识别 {marker.count} 次</span>
             </div>
           ))}
         </div>
       </div>
 
+      {/* Plant Detail Overlay */}
       {selectedPlant && (
         <PlantDetail plant={selectedPlant} onClose={() => setSelectedPlant(null)} />
       )}

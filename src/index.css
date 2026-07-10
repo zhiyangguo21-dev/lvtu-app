@@ -70,3 +70,45 @@
 .animate-scale-in {
   animation: scale-in 0.2s ease-out;
 }
+
+
+/* === Leaflet style overrides === */
+.leaflet-container {
+  z-index: 1;
+  font-family: inherit;
+  background: #f0f5eb;
+}
+
+/* Prevent Tailwind reset from breaking Leaflet controls */
+.leaflet-control {
+  z-index: 800;
+}
+
+.leaflet-popup {
+  z-index: 900;
+}
+
+.leaflet-popup-content-wrapper {
+  border-radius: 12px !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.12) !important;
+  padding: 4px !important;
+}
+
+.leaflet-popup-content {
+  margin: 8px 10px !important;
+  font-family: inherit !important;
+  line-height: 1.5 !important;
+}
+
+.leaflet-popup-tip {
+  box-shadow: none !important;
+}
+
+.leaflet-control-zoom {
+  display: none !important;
+}
+
+/* PlantDetail overlay z-index above Leaflet */
+.plant-detail-overlay {
+  z-index: 1100;
+}
