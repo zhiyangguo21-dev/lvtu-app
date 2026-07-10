@@ -1,42 +1,45 @@
-﻿import { MessageCircle, Heart, Share2, MoreHorizontal } from "lucide-react"
+﻿import { useState } from "react"
+import { MessageCircle, Heart, Share2, MoreHorizontal } from "lucide-react"
 
-const posts = [
-  {
-    id: 1,
-    user: "植物爱好者小王",
-    avatar: "🌻",
-    time: "2 小时前",
-    content: "今天在公园发现了一棵超级大的银杏树！秋叶金黄，太美了 🌟 分享给大家",
-    likes: 234,
-    comments: 18,
-    tag: "银杏",
-    tagColor: "bg-amber-50 text-amber-600",
-  },
-  {
-    id: 2,
-    user: "绿植达人",
-    avatar: "🌵",
-    time: "5 小时前",
-    content: "分享我的多肉养护心得：少浇水、多光照，春秋两季施薄肥，新手也能养爆盆！",
-    likes: 189,
-    comments: 32,
-    tag: "养护技巧",
-    tagColor: "bg-green-50 text-green-600",
-  },
-  {
-    id: 3,
-    user: "花开半夏",
-    avatar: "🌸",
-    time: "昨天",
-    content: "院子里月季又开花了，粉色的特别好看，忍不住拍了好多张 📸",
-    likes: 156,
-    comments: 9,
-    tag: "月季",
-    tagColor: "bg-pink-50 text-pink-600",
-  },
+interface Post {
+  id: number
+  user: string
+  avatar: string
+  time: string
+  content: string
+  tag: string
+  tagColor: string
+  initialLikes: number
+  initialComments: number
+}
+
+const initialPosts: Post[] = [
+  { id: 1, user: "植物爱好者小王", avatar: "🌻", time: "2 小时前", content: "今天在公园发现了一棵超级大的银杏树！秋叶金黄，太美了 🌟 分享给大家", initialLikes: 234, initialComments: 18, tag: "银杏", tagColor: "bg-amber-50 text-amber-600" },
+  { id: 2, user: "绿植达人", avatar: "🌵", time: "5 小时前", content: "分享我的多肉养护心得：少浇水、多光照，春秋两季施薄肥，新手也能养爆盆！", initialLikes: 189, initialComments: 32, tag: "养护技巧", tagColor: "bg-green-50 text-green-600" },
+  { id: 3, user: "花开半夏", avatar: "🌸", time: "昨天", content: "院子里月季又开花了，粉色的特别好看，忍不住拍了好多张 📸", initialLikes: 156, initialComments: 9, tag: "月季", tagColor: "bg-pink-50 text-pink-600" },
 ]
 
 function CommunityPage() {
+  const [posts, setPosts] = useState(initialPosts)
+  const [likedPosts, setLikedPosts] = useState<Set<number>>(new Set())
+  const [activeTab, setActiveTab] = useState("推荐")
+
+  const toggleLike = (id: number) => {
+    setLikedPosts((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+    setPosts((prev) =>
+      prev.map((p) => {
+        if (p.id !== id) return p
+        const alreadyLiked = likedPosts.has(id)
+        return { ...p, initialLikes: alreadyLiked ? p.initialLikes - 1 : p.initialLikes + 1 }
+      })
+    )
+  }
+
   return (
     <div className="pb-2">
       <header className="flex items-center justify-between px-5 pt-5 pb-3">
@@ -47,13 +50,12 @@ function CommunityPage() {
       </header>
 
       <div className="px-5 pb-4 flex gap-2">
-        {["推荐", "关注", "最新", "热门"].map((tab, i) => (
+        {["推荐", "关注", "最新", "热门"].map((tab) => (
           <button
             key={tab}
+            onClick={() => setActiveTab(tab)}
             className={`text-sm font-semibold px-4 py-1.5 rounded-full transition-colors ${
-              i === 0
-                ? "bg-primary text-white"
-                : "bg-white text-text-secondary border border-card-bg hover:bg-primary-light"
+              activeTab === tab ? "bg-primary text-white" : "bg-white text-text-secondary border border-card-bg hover:bg-primary-light"
             }`}
           >
             {tab}
@@ -62,44 +64,38 @@ function CommunityPage() {
       </div>
 
       <div className="px-5 flex flex-col gap-3">
-        {posts.map((post) => (
-          <div
-            key={post.id}
-            className="bg-white rounded-2xl p-4 shadow-sm border border-card-bg"
-          >
-            {/* User info */}
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-9 h-9 rounded-full bg-card-bg flex items-center justify-center text-lg">
-                {post.avatar}
+        {posts.map((post) => {
+          const liked = likedPosts.has(post.id)
+          return (
+            <div key={post.id} className="bg-white rounded-2xl p-4 shadow-sm border border-card-bg">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-9 h-9 rounded-full bg-card-bg flex items-center justify-center text-lg">{post.avatar}</div>
+                <div className="flex-1">
+                  <p className="text-sm font-bold text-text-primary">{post.user}</p>
+                  <p className="text-[10px] text-text-placeholder">{post.time}</p>
+                </div>
+                <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${post.tagColor}`}>{post.tag}</span>
               </div>
-              <div className="flex-1">
-                <p className="text-sm font-bold text-text-primary">{post.user}</p>
-                <p className="text-[10px] text-text-placeholder">{post.time}</p>
+              <p className="text-sm text-text-primary leading-relaxed mb-3">{post.content}</p>
+              <div className="flex items-center gap-5 pt-1 border-t border-card-bg">
+                <button
+                  onClick={() => toggleLike(post.id)}
+                  className={`flex items-center gap-1 transition-all active:scale-110 ${liked ? "text-red-500" : "text-text-placeholder hover:text-red-400"}`}
+                >
+                  <Heart className={`w-4 h-4 transition-all ${liked ? "fill-red-500 scale-110" : ""}`} />
+                  <span className="text-[11px] font-medium">{post.initialLikes}</span>
+                </button>
+                <button className="flex items-center gap-1 text-text-placeholder hover:text-primary transition-colors">
+                  <MessageCircle className="w-4 h-4" />
+                  <span className="text-[11px] font-medium">{post.initialComments}</span>
+                </button>
+                <button className="flex items-center gap-1 text-text-placeholder hover:text-blue-400 transition-colors ml-auto">
+                  <Share2 className="w-4 h-4" />
+                </button>
               </div>
-              <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${post.tagColor}`}>
-                {post.tag}
-              </span>
             </div>
-
-            {/* Content */}
-            <p className="text-sm text-text-primary leading-relaxed mb-3">{post.content}</p>
-
-            {/* Actions */}
-            <div className="flex items-center gap-5 pt-1 border-t border-card-bg">
-              <button className="flex items-center gap-1 text-text-placeholder hover:text-red-400 transition-colors">
-                <Heart className="w-4 h-4" />
-                <span className="text-[11px] font-medium">{post.likes}</span>
-              </button>
-              <button className="flex items-center gap-1 text-text-placeholder hover:text-primary transition-colors">
-                <MessageCircle className="w-4 h-4" />
-                <span className="text-[11px] font-medium">{post.comments}</span>
-              </button>
-              <button className="flex items-center gap-1 text-text-placeholder hover:text-blue-400 transition-colors ml-auto">
-                <Share2 className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
     </div>
   )
