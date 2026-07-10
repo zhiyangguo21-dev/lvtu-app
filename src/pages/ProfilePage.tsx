@@ -3,7 +3,7 @@
 function ProfilePage() {
   return (
     <div className="pb-2">
-      <header className="flex items-center justify-between px-5 pt-5 pb-3">
+      <header className="sticky top-0 z-30 bg-bg/95 backdrop-blur-sm flex items-center justify-between px-5 pt-5 pb-3">
         <h1 className="text-2xl font-bold text-text-primary tracking-tight">我的</h1>
         <button className="p-2 rounded-full hover:bg-primary-light/50 transition-colors">
           <Settings className="w-5 h-5 text-text-primary" />

@@ -29,7 +29,7 @@ function EncyclopediaPage() {
   return (
     <div className="pb-2">
       {/* Header */}
-      <header className="flex items-center gap-3 px-5 pt-5 pb-3">
+      <header className="sticky top-0 z-30 bg-bg/95 backdrop-blur-sm flex items-center gap-3 px-5 pt-5 pb-3">
         <h1 className="text-2xl font-bold text-text-primary tracking-tight">植物百科</h1>
         <div className="flex-1" />
         <div className="relative">

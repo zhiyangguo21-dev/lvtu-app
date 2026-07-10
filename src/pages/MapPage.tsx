@@ -81,7 +81,7 @@ function MapPage() {
   return (
     <div className="pb-2 relative">
       {/* Header */}
-      <header className="flex items-center justify-between px-5 pt-5 pb-3">
+      <header className="sticky top-0 z-30 bg-bg/95 backdrop-blur-sm flex items-center justify-between px-5 pt-5 pb-3">
         <h1 className="text-2xl font-bold text-text-primary tracking-tight">🗺️ 城市绿地图</h1>
         <div className="relative">
           <button onClick={() => setShowFilter(!showFilter)} className="flex items-center gap-1.5 bg-white border border-card-bg rounded-full px-3.5 py-1.5 text-sm font-semibold text-text-primary hover:bg-gray-50 transition-colors">
