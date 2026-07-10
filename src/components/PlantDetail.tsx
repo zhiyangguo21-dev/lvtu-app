@@ -8,7 +8,7 @@ interface PlantDetailProps {
 
 function PlantDetail({ plant, onClose }: PlantDetailProps) {
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40" onClick={onClose}>
+    <div className="fixed inset-0 z-[60] flex items-end justify-center bg-black/40" onClick={onClose}>
       <div
         className="relative w-full max-w-[430px] max-h-[85vh] bg-white rounded-t-3xl overflow-y-auto animate-slide-up"
         onClick={(e) => e.stopPropagation()}
@@ -56,7 +56,7 @@ function PlantDetail({ plant, onClose }: PlantDetailProps) {
         </div>
 
         {/* Detail sections */}
-        <div className="px-5 pb-6 space-y-4">
+        <div className="px-5 pb-28 space-y-4">
           <section>
             <div className="flex items-center gap-2 mb-2">
               <div className="w-6 h-6 rounded-lg bg-[#e8f5e9] flex items-center justify-center">
